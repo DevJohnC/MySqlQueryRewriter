@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlQueryRewriter", "MySqlQueryRewriter\MySqlQueryRewriter.csproj", "{1F7F587A-07C3-4C2D-B718-2AA48D8390DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlQueryRewriter.Tests", "MySqlQueryRewriter.Tests\MySqlQueryRewriter.Tests.csproj", "{9BD4C251-3671-44D6-8A38-41E5579A8FDF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F7F587A-07C3-4C2D-B718-2AA48D8390DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F7F587A-07C3-4C2D-B718-2AA48D8390DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F7F587A-07C3-4C2D-B718-2AA48D8390DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F7F587A-07C3-4C2D-B718-2AA48D8390DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BD4C251-3671-44D6-8A38-41E5579A8FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BD4C251-3671-44D6-8A38-41E5579A8FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BD4C251-3671-44D6-8A38-41E5579A8FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BD4C251-3671-44D6-8A38-41E5579A8FDF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3DC77D3B-96A0-4029-B121-6515AA23C2EF}
+	EndGlobalSection
+EndGlobal
