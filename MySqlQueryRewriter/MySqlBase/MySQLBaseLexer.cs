@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace parsers
@@ -12,7 +13,7 @@ namespace parsers
 
 		}
 
-		public long serverVersion { get; set; } = 50630;
+		public long serverVersion { get; set; } = int.MaxValue;
 
 		public SqlMode sqlMode { get; set; }
 
@@ -48,9 +49,30 @@ namespace parsers
 			Type = type;
 		}
 
+		private readonly Queue<IToken> _pendingTokens = new Queue<IToken>();
+
+		public override IToken NextToken()
+		{
+			if (_pendingTokens.Count > 0)
+			{
+				var pending = _pendingTokens.Dequeue();
+				return pending;
+			}
+
+			var next = base.NextToken();
+			if (_pendingTokens.Count > 0)
+			{
+				var pending = _pendingTokens.Dequeue();
+				_pendingTokens.Enqueue(next);
+				return pending;
+			}
+
+			return next;
+		}
+
 		protected void emitDot()
 		{
-			Emit(TokenFactory.Create(new Tuple<ITokenSource, ICharStream>(this, (ICharStream)InputStream),
+			_pendingTokens.Enqueue(TokenFactory.Create(new Tuple<ITokenSource, ICharStream>(this, (ICharStream)InputStream),
 				MySQLLexer.DOT_SYMBOL, Text, Channel, TokenStartCharIndex, TokenStartCharIndex, TokenStartLine,
 				TokenStartLine));
 		}

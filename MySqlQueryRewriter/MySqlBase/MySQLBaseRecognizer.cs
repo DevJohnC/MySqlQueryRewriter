@@ -16,7 +16,7 @@ namespace parsers
 		{
 		}
 
-		public long serverVersion { get; set; } = 50630;
+		public long serverVersion { get; set; } = int.MaxValue;
 
 		public SqlMode sqlMode { get; set; }
 
