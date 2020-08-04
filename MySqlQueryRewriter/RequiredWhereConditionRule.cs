@@ -15,6 +15,8 @@ namespace MySqlQueryRewriter
 
 		private bool _whereClauseOpened = false;
 
+		private bool _whereClauseHasHangingBracket = false;
+
 		private bool _whereClauseClosed = false;
 
 		public override void ConfigureQueryVisitor(MySqlQueryVisitor queryVisitor)
@@ -51,6 +53,7 @@ namespace MySqlQueryRewriter
 			_isEnabledForQuery = true;
 			_whereClauseOpened = false;
 			_whereClauseClosed = false;
+			_whereClauseHasHangingBracket = false;
 			return RewriteResult.NoChanges;
 		}
 
@@ -79,6 +82,7 @@ namespace MySqlQueryRewriter
 				return;
 
 			_whereClauseOpened = true;
+			_whereClauseHasHangingBracket = isWhereClauseToken;
 			if (isWhereClauseToken)
 				writer.WriteSymbol($"WHERE {Condition} AND (");
 			else
@@ -87,11 +91,12 @@ namespace MySqlQueryRewriter
 
 		private void CloseWhereClause(MySqlQueryWriter writer)
 		{
-			if (_whereClauseClosed)
+			if (!_whereClauseOpened || _whereClauseClosed)
 				return;
 
 			_whereClauseClosed = true;
-			writer.WriteSymbol(")");
+			if (_whereClauseHasHangingBracket)
+				writer.WriteSymbol(")");
 		}
 	}
 }
