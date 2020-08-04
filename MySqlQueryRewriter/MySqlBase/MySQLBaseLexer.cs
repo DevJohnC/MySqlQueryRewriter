@@ -73,8 +73,9 @@ namespace parsers
 		protected void emitDot()
 		{
 			_pendingTokens.Enqueue(TokenFactory.Create(new Tuple<ITokenSource, ICharStream>(this, (ICharStream)InputStream),
-				MySQLLexer.DOT_SYMBOL, Text, Channel, TokenStartCharIndex, TokenStartCharIndex, TokenStartLine,
+				MySQLLexer.DOT_SYMBOL, ".", Channel, TokenStartCharIndex, TokenStartCharIndex, TokenStartLine,
 				TokenStartLine));
+			Text = Text.Substring(1);
 		}
 
 		protected int checkCharset(string text)
