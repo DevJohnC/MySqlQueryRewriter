@@ -9,7 +9,7 @@ namespace MySqlQueryRewriter
 	{
 		private readonly StringBuilder _text = new StringBuilder();
 
-		public void WriteToken(string tokenStr)
+		public void WriteSymbol(string tokenStr)
 		{
 			_text.Append($"{tokenStr} ");
 		}

@@ -37,24 +37,22 @@ namespace MySqlQueryRewriter
 
 		private RewriteResult RewriteIdentifier(MySqlQueryWriter writer, ITerminalNode node)
 		{
-			var identifier = node.GetText();
-			if (string.Equals(identifier, Identifier, System.StringComparison.OrdinalIgnoreCase))
+			if (string.Equals(node.GetText(), Identifier, System.StringComparison.OrdinalIgnoreCase))
 			{
-				identifier = Replacement;
+				writer.WriteSymbol(Replacement);
+				return RewriteResult.ReplacedSymbol;
 			}
-			writer.WriteToken(identifier);
-			return RewriteResult.HaltProcessing;
+			return RewriteResult.NoChanges;
 		}
 
 		private RewriteResult RewriteBacktickQuotedIdentifier(MySqlQueryWriter writer, ITerminalNode node)
 		{
-			var identifier = node.GetText();
-			if (string.Equals(identifier, _backtickQuotedIdentifier, System.StringComparison.OrdinalIgnoreCase))
+			if (string.Equals(node.GetText(), _backtickQuotedIdentifier, System.StringComparison.OrdinalIgnoreCase))
 			{
-				identifier = _backtickQuotedReplacement;
+				writer.WriteSymbol(_backtickQuotedReplacement);
+				return RewriteResult.ReplacedSymbol;
 			}
-			writer.WriteToken(identifier);
-			return RewriteResult.HaltProcessing;
+			return RewriteResult.NoChanges;
 		}
 	}
 }

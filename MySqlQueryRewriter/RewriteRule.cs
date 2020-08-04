@@ -2,8 +2,8 @@
 {
 	public enum RewriteResult
 	{
-		ContinueProcessing,
-		HaltProcessing
+		NoChanges,
+		ReplacedSymbol
 	}
 
 	public abstract class RewriteRule

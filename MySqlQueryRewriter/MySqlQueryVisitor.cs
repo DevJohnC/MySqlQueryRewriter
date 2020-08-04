@@ -40,18 +40,12 @@ namespace MySqlQueryRewriter
 
 		public override void VisitTerminal([NotNull] ITerminalNode node)
 		{
-			//  don't write "<EOF>"
-			if (node.Symbol.Type == -1)
-			{
-				return;
-			}
-
 			if (_terminalNodeRewriters.TryGetValue(node.Symbol.Type, out var rewriterList))
 			{
 				var writeTokenText = true;
 				foreach (var rewriter in rewriterList)
 				{
-					if (rewriter(_writer, node) == RewriteResult.HaltProcessing)
+					if (rewriter(_writer, node) == RewriteResult.ReplacedSymbol)
 					{
 						writeTokenText = false;
 						break;
@@ -60,13 +54,22 @@ namespace MySqlQueryRewriter
 
 				if (writeTokenText)
 				{
-					_writer.WriteToken(node.GetText());
+					WriteRawTokenText(node);
 				}
 			}
 			else
 			{
-				_writer.WriteToken(node.GetText());
+				WriteRawTokenText(node);
 			}
+		}
+
+		private void WriteRawTokenText(ITerminalNode node)
+		{
+			if (node.Symbol.Type == -1) //  Don't write raw EOFs
+			{
+				return;
+			}
+			_writer.WriteSymbol(node.GetText());
 		}
 	}
 }
