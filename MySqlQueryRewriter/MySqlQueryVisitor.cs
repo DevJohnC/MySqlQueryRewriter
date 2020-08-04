@@ -2,6 +2,7 @@
 using Antlr4.Runtime.Tree;
 using parsers;
 using System;
+using System.Collections.Generic;
 
 namespace MySqlQueryRewriter
 {
@@ -10,11 +11,26 @@ namespace MySqlQueryRewriter
 	/// </summary>
 	public class MySqlQueryVisitor : MySQLParserBaseListener
 	{
+		public delegate RewriteResult TerminalNodeRewriter(MySqlQueryWriter writer, ITerminalNode node);
+
 		private readonly MySqlQueryWriter _writer;
+
+		private readonly Dictionary<int, List<TerminalNodeRewriter>> _terminalNodeRewriters = new Dictionary<int, List<TerminalNodeRewriter>>();
 
 		public MySqlQueryVisitor(MySqlQueryWriter writer)
 		{
 			_writer = writer ?? throw new ArgumentNullException(nameof(writer));
+		}
+
+		public void AddTerminalNodeRewriter(int symbolType, TerminalNodeRewriter terminalNodeRewriter)
+		{
+			if (!_terminalNodeRewriters.TryGetValue(symbolType, out var rewriterList))
+			{
+				rewriterList = new List<TerminalNodeRewriter>();
+				_terminalNodeRewriters.Add(symbolType, rewriterList);
+			}
+
+			rewriterList.Add(terminalNodeRewriter);
 		}
 
 		public override void VisitErrorNode([NotNull] IErrorNode node)
@@ -22,67 +38,35 @@ namespace MySqlQueryRewriter
 			base.VisitErrorNode(node);
 		}
 
-		public override void EnterSelectStatement([NotNull] MySQLParser.SelectStatementContext context)
+		public override void VisitTerminal([NotNull] ITerminalNode node)
 		{
-			_writer.WriteSelect();
-			base.EnterSelectStatement(context);
-		}
+			//  don't write "<EOF>"
+			if (node.Symbol.Type == -1)
+			{
+				return;
+			}
 
-		public override void EnterInsertStatement([NotNull] MySQLParser.InsertStatementContext context)
-		{
-			_writer.WriteInsert();
-		}
+			if (_terminalNodeRewriters.TryGetValue(node.Symbol.Type, out var rewriterList))
+			{
+				var writeTokenText = true;
+				foreach (var rewriter in rewriterList)
+				{
+					if (rewriter(_writer, node) == RewriteResult.HaltProcessing)
+					{
+						writeTokenText = false;
+						break;
+					}
+				}
 
-		public override void EnterUpdateStatement([NotNull] MySQLParser.UpdateStatementContext context)
-		{
-			_writer.WriteUpdate();
-		}
-
-		public override void EnterDeleteStatement([NotNull] MySQLParser.DeleteStatementContext context)
-		{
-			_writer.WriteDelete();
-		}
-
-		public override void EnterIdentifier([NotNull] MySQLParser.IdentifierContext context)
-		{
-			_writer.WriteIdentifier(context.GetText());
-		}
-
-		public override void EnterQueryExpression([NotNull] MySQLParser.QueryExpressionContext context)
-		{
-			//  pseudo functions like COUNT end up here?
-			base.EnterQueryExpression(context);
-		}
-
-		public override void EnterFunctionName([NotNull] MySQLParser.FunctionNameContext context)
-		{
-			base.EnterFunctionName(context);
-		}
-
-		public override void EnterFunctionParameter([NotNull] MySQLParser.FunctionParameterContext context)
-		{
-			base.EnterFunctionParameter(context);
-		}
-
-		public override void EnterFromClause([NotNull] MySQLParser.FromClauseContext context)
-		{
-			base.EnterFromClause(context);
-		}
-
-		public override void ExitFromClause([NotNull] MySQLParser.FromClauseContext context)
-		{
-			base.ExitFromClause(context);
-		}
-
-		public override void EnterTableName([NotNull] MySQLParser.TableNameContext context)
-		{
-			var tableName = context.GetText();
-			base.EnterTableName(context);
-		}
-
-		public override void EnterFunctionCall([NotNull] MySQLParser.FunctionCallContext context)
-		{
-			base.EnterFunctionCall(context);
+				if (writeTokenText)
+				{
+					_writer.WriteToken(node.GetText());
+				}
+			}
+			else
+			{
+				_writer.WriteToken(node.GetText());
+			}
 		}
 	}
 }

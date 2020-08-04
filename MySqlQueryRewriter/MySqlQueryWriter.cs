@@ -9,6 +9,11 @@ namespace MySqlQueryRewriter
 	{
 		private readonly StringBuilder _text = new StringBuilder();
 
+		public void WriteToken(string tokenStr)
+		{
+			_text.Append($"{tokenStr} ");
+		}
+
 		public void WriteSelect()
 		{
 			_text.Append("SELECT ");

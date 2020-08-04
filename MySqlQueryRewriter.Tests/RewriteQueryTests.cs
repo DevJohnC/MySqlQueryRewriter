@@ -15,6 +15,11 @@ namespace MySqlQueryRewriter.Tests
 
 			var rewrittenQueryText = queryRewriter.Rewrite(originalQueryText,
 				new IdentifierRewriteRule("wp_posts", "the_posts"));
+
+			Assert.Equal(
+				originalQueryText.Replace("wp_posts", "the_posts").NormalizeQueryString(),
+				rewrittenQueryText.NormalizeQueryString()
+				);
 		}
 	}
 }
