@@ -11,7 +11,11 @@ namespace MySqlQueryRewriter
 
 		public void WriteSymbol(string tokenStr)
 		{
-			_text.Append($"{tokenStr} ");
+			if (tokenStr == null)
+				return;
+			if (tokenStr[0] != '(')
+				_text.Append(" ");
+			_text.Append(tokenStr);
 		}
 
 		public override int GetHashCode()
